@@ -60,7 +60,10 @@ if start_button:
         for i in range(10):  # Try camera indices from 0 to 9
             cap = cv2.VideoCapture(i)
             if cap.isOpened():
+                st.text(f"Camera opened with index {i}")
                 return cap
+            else:
+                st.text(f"Failed to open camera with index {i}")
         return None
 
     cap = initialize_camera()
