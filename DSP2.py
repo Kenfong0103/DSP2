@@ -59,7 +59,7 @@ if start_button:
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
-        st.error("Could not open camera. Please check if camera is connected and accessible.")
+        st.error("Could not open camera. Please check if camera is connected and accessible. Ensure no other application is using the camera, and allow permissions if prompted.")
     else:
         # Initial position and size of the green square
         square_size = 200
