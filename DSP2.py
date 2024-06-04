@@ -4,12 +4,25 @@ from keras.models import model_from_json
 import streamlit as st
 from PIL import Image
 
-# Load your trained model
-with open('model-vgg19.json', 'r') as json_file:
-    loaded_model_json = json_file.read()
+# Error handling for imports
+try:
+    import cv2
+    import numpy as np
+    from keras.models import model_from_json
+    import streamlit as st
+    from PIL import Image
+except ImportError as e:
+    st.error(f"Error importing module: {e}")
 
-loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights('model-vgg19.h5')
+# Load your trained model with error handling
+try:
+    with open('model-vgg19.json', 'r') as json_file:
+        loaded_model_json = json_file.read()
+
+    loaded_model = model_from_json(loaded_model_json)
+    loaded_model.load_weights('model-vgg19.h5')
+except Exception as e:
+    st.error(f"Error loading model: {e}")
 
 # Define class labels
 class_labels = {
@@ -30,7 +43,7 @@ st.text('Press "Start" to begin the camera.')
 start_button = st.button('Start')
 
 if start_button:
-    # Display text above the camera feed
+    # Display instructions
     st.markdown("""
         <div style="width:100%; overflow-x:auto;">
             <p style="text-align: left; font-size: 15px;">1) Prepare an image of stainless steel defect types and display it on phone.</p>
@@ -46,20 +59,19 @@ if start_button:
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
-        st.error("Error: Could not open video device.")
+        st.error("Could not open camera. Please check if camera is connected and accessible.")
     else:
         # Initial position and size of the green square
         square_size = 200
 
         stframe = st.empty()
-        stop = False
-        stop_button = None  # Initialize stop button variable
-
-        while not stop:
+        stop_button = st.button('Stop')
+        
+        while cap.isOpened():
             ret, frame = cap.read()  # Read a frame from the camera
-            
-            if ret:
-                assert not isinstance(frame,type(None))
+
+            if not ret:
+                st.error("Failed to capture image from camera.")
                 break
 
             # Get the dimensions of the frame
@@ -86,7 +98,7 @@ if start_button:
 
             # Prepare the image for prediction
             img_array = np.expand_dims(rgb_frame, axis=0)  # Add batch dimension
-            img_array = img_array.astype('float32') / 255.0  # Normalize pixel values if necessary
+            img_array = img_array.astype('float32') / 255.0  # Normalize pixel values
 
             # Make predictions
             predictions = loaded_model.predict(img_array)
@@ -110,12 +122,8 @@ if start_button:
             stframe.image(img, channels="RGB")
 
             # Check if the stop button is pressed
-            if stop_button is None:
-                st.text('Press "Stop" to close the camera.')
-                stop_button = st.button('Stop')
-
             if stop_button:
-                stop = True
+                break
 
         # Release the camera and close all OpenCV windows
         cap.release()
