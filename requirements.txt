@@ -1,0 +1,6 @@
+opencv-python
+numpy
+keras==2.15.0
+streamlit
+Pillow
+tensorflow==2.15.0
