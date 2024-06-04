@@ -56,7 +56,7 @@ if start_button:
     """, unsafe_allow_html=True)
 
     # Start the camera
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     if not cap.isOpened():
         st.error("Could not open camera. Please check if camera is connected and accessible. Ensure no other application is using the camera, and allow permissions if prompted.")
