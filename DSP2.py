@@ -3,28 +3,14 @@ import numpy as np
 from keras.models import model_from_json
 import streamlit as st
 from PIL import Image
-from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
+from streamlit_webrtc import VideoTransformerBase, webrtc_streamer, WebRtcMode
 
-# Error handling for imports
-try:
-    import cv2
-    import numpy as np
-    from keras.models import model_from_json
-    import streamlit as st
-    from PIL import Image
-    from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
-except ImportError as e:
-    st.error(f"Error importing module: {e}")
+# Load your trained model
+with open('model-vgg19.json', 'r') as json_file:
+    loaded_model_json = json_file.read()
 
-# Load your trained model with error handling
-try:
-    with open('model-vgg19.json', 'r') as json_file:
-        loaded_model_json = json_file.read()
-
-    loaded_model = model_from_json(loaded_model_json)
-    loaded_model.load_weights('model-vgg19.h5')
-except Exception as e:
-    st.error(f"Error loading model: {e}")
+loaded_model = model_from_json(loaded_model_json)
+loaded_model.load_weights('model-vgg19.h5')
 
 # Define class labels
 class_labels = {
@@ -40,7 +26,6 @@ class_labels = {
 # Streamlit UI
 st.title('Identification & Classification of Stainless Steel Defect Types')
 
-# Display instructions
 st.markdown("""
     <div style="width:100%; overflow-x:auto;">
         <p style="text-align: left; font-size: 15px;">1) Prepare an image of stainless steel defect types and display it on phone.</p>
@@ -54,27 +39,26 @@ st.markdown("""
 
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
-        self.model = loaded_model
-        self.class_labels = class_labels
+        self.square_size = 200
 
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        
-        # Initial position and size of the green square
-        square_size = 200
 
         # Get the dimensions of the frame
         frame_height, frame_width = img.shape[:2]
 
         # Calculate the initial position of the square to be centered
-        x_start = frame_width // 2 - square_size // 2
-        y_start = frame_height // 2 - square_size // 2
+        x_start = frame_width // 2 - self.square_size // 2
+        y_start = frame_height // 2 - self.square_size // 2
+
+        # Clone the frame to draw on
+        frame_clone = img.copy()
 
         # Draw the green square
-        cv2.rectangle(img, (x_start, y_start), (x_start + square_size, y_start + square_size), (0, 255, 0), 2)
+        cv2.rectangle(frame_clone, (x_start, y_start), (x_start + self.square_size, y_start + self.square_size), (0, 255, 0), 2)
 
         # Extract the square region from the frame
-        square_frame = img[y_start:y_start + square_size, x_start:x_start + square_size]
+        square_frame = img[y_start:y_start + self.square_size, x_start:x_start + self.square_size]
 
         # Resize the square region to match the input size expected by the model
         resized_frame = cv2.resize(square_frame, (200, 200))
@@ -84,25 +68,34 @@ class VideoTransformer(VideoTransformerBase):
 
         # Prepare the image for prediction
         img_array = np.expand_dims(rgb_frame, axis=0)  # Add batch dimension
-        img_array = img_array.astype('float32') / 255.0  # Normalize pixel values
+        img_array = img_array.astype('float32') / 255.0  # Normalize pixel values if necessary
 
         # Make predictions
-        predictions = self.model.predict(img_array)
+        predictions = loaded_model.predict(img_array)
 
         # Get the predicted class label
-        predicted_label = self.class_labels[np.argmax(predictions)]
+        predicted_label = class_labels[np.argmax(predictions)]
 
         # Get the probability/confidence score for the predicted class
         confidence = np.max(predictions)  # Maximum confidence value
 
         # Display the predicted label
         text = f"Predicted: {predicted_label}"
-        cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame_clone, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         # Display confidence below the predicted label
         confidence_text = f"Confidence: {confidence:.2f}"
-        cv2.putText(img, confidence_text, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame_clone, confidence_text, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        return img
+        return frame_clone
 
-webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
+webrtc_ctx = webrtc_streamer(
+    key="example",
+    mode=WebRtcMode.SENDRECV,
+    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+    video_processor_factory=VideoTransformer,
+    media_stream_constraints={"video": True, "audio": False},
+)
+
+if webrtc_ctx.video_processor:
+    webrtc_ctx.video_processor.square_size = 200
