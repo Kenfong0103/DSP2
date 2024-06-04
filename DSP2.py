@@ -59,10 +59,7 @@ if start_button:
             ret, frame = cap.read()  # Read a frame from the camera
             
             if ret:
-                assert not isinstance(frame,type(None)),
-            
-            if not ret:
-                st.error("Error: Failed to capture image")
+                assert not isinstance(frame,type(None))
                 break
 
             # Get the dimensions of the frame
