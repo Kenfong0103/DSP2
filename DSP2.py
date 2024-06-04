@@ -11,7 +11,7 @@ with open('model-vgg19.json', 'r') as json_file:
 loaded_model = model_from_json(loaded_model_json)
 loaded_model.load_weights('model-vgg19.h5')
 
-# Define class labelsX
+# Define class labels
 class_labels = {
     0: "crazing",
     1: "inclusion",
@@ -53,6 +53,10 @@ if start_button:
     stop_button = None  # Initialize stop button variable
     while not stop:
         ret, frame = cap.read()  # Read a frame from the camera
+
+        if not ret:
+            st.warning("Failed to capture image. Make sure your camera is working properly.")
+            continue
 
         # Get the dimensions of the frame
         frame_height, frame_width = frame.shape[:2]
