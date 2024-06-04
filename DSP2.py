@@ -55,10 +55,17 @@ if start_button:
         </div>
     """, unsafe_allow_html=True)
 
-    # Start the camera
-    cap = cv2.VideoCapture(1)
+    # Function to initialize camera
+    def initialize_camera():
+        for i in range(10):  # Try camera indices from 0 to 9
+            cap = cv2.VideoCapture(i)
+            if cap.isOpened():
+                return cap
+        return None
 
-    if not cap.isOpened():
+    cap = initialize_camera()
+
+    if cap is None:
         st.error("Could not open camera. Please check if camera is connected and accessible. Ensure no other application is using the camera, and allow permissions if prompted.")
     else:
         # Initial position and size of the green square
