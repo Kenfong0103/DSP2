@@ -55,86 +55,106 @@ if start_button:
         </div>
     """, unsafe_allow_html=True)
 
-    # Function to initialize camera
-    def initialize_camera():
-        for i in range(10):  # Try camera indices from 0 to 9
-            cap = cv2.VideoCapture(i)
-            if cap.isOpened():
-                st.text(f"Camera opened with index {i}")
-                return cap
+    # Function to list available cameras
+    def list_available_cameras():
+        index = 0
+        available_cameras = []
+        while True:
+            cap = cv2.VideoCapture(index)
+            if cap.read()[0]:
+                available_cameras.append(index)
+                cap.release()
             else:
-                st.text(f"Failed to open camera with index {i}")
-        return None
+                break
+            index += 1
+        return available_cameras
 
-    cap = initialize_camera()
+    available_cameras = list_available_cameras()
+    st.text(f"Available cameras: {available_cameras}")
 
-    if cap is None:
-        st.error("Could not open camera. Please check if camera is connected and accessible. Ensure no other application is using the camera, and allow permissions if prompted.")
+    if not available_cameras:
+        st.error("No available cameras found. Please check if camera is connected and accessible.")
     else:
-        # Initial position and size of the green square
-        square_size = 200
+        # Function to initialize camera
+        def initialize_camera(indices):
+            for i in indices:
+                cap = cv2.VideoCapture(i)
+                if cap.isOpened():
+                    st.text(f"Camera opened with index {i}")
+                    return cap
+                else:
+                    st.text(f"Failed to open camera with index {i}")
+            return None
 
-        stframe = st.empty()
-        stop_button = st.button('Stop')
-        
-        while cap.isOpened():
-            ret, frame = cap.read()  # Read a frame from the camera
+        cap = initialize_camera(available_cameras)
 
-            if not ret:
-                st.error("Failed to capture image from camera.")
-                break
+        if cap is None:
+            st.error("Could not open camera. Please check if camera is connected and accessible. Ensure no other application is using the camera, and allow permissions if prompted.")
+        else:
+            # Initial position and size of the green square
+            square_size = 200
 
-            # Get the dimensions of the frame
-            frame_height, frame_width = frame.shape[:2]
+            stframe = st.empty()
+            stop_button = st.button('Stop')
+            
+            while cap.isOpened():
+                ret, frame = cap.read()  # Read a frame from the camera
 
-            # Calculate the initial position of the square to be centered
-            x_start = frame_width // 2 - square_size // 2
-            y_start = frame_height // 2 - square_size // 2
+                if not ret:
+                    st.error("Failed to capture image from camera.")
+                    break
 
-            # Clone the frame to draw on
-            frame_clone = frame.copy()
+                # Get the dimensions of the frame
+                frame_height, frame_width = frame.shape[:2]
 
-            # Draw the green square
-            cv2.rectangle(frame_clone, (x_start, y_start), (x_start + square_size, y_start + square_size), (0, 255, 0), 2)
+                # Calculate the initial position of the square to be centered
+                x_start = frame_width // 2 - square_size // 2
+                y_start = frame_height // 2 - square_size // 2
 
-            # Extract the square region from the frame
-            square_frame = frame[y_start:y_start + square_size, x_start:x_start + square_size]
+                # Clone the frame to draw on
+                frame_clone = frame.copy()
 
-            # Resize the square region to match the input size expected by the model
-            resized_frame = cv2.resize(square_frame, (200, 200))
+                # Draw the green square
+                cv2.rectangle(frame_clone, (x_start, y_start), (x_start + square_size, y_start + square_size), (0, 255, 0), 2)
 
-            # Convert the frame to RGB
-            rgb_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
+                # Extract the square region from the frame
+                square_frame = frame[y_start:y_start + square_size, x_start:x_start + square_size]
 
-            # Prepare the image for prediction
-            img_array = np.expand_dims(rgb_frame, axis=0)  # Add batch dimension
-            img_array = img_array.astype('float32') / 255.0  # Normalize pixel values
+                # Resize the square region to match the input size expected by the model
+                resized_frame = cv2.resize(square_frame, (200, 200))
 
-            # Make predictions
-            predictions = loaded_model.predict(img_array)
+                # Convert the frame to RGB
+                rgb_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
 
-            # Get the predicted class label
-            predicted_label = class_labels[np.argmax(predictions)]
+                # Prepare the image for prediction
+                img_array = np.expand_dims(rgb_frame, axis=0)  # Add batch dimension
+                img_array = img_array.astype('float32') / 255.0  # Normalize pixel values
 
-            # Get the probability/confidence score for the predicted class
-            confidence = np.max(predictions)  # Maximum confidence value
+                # Make predictions
+                predictions = loaded_model.predict(img_array)
 
-            # Display the predicted label
-            text = f"Predicted: {predicted_label}"
-            cv2.putText(frame_clone, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                # Get the predicted class label
+                predicted_label = class_labels[np.argmax(predictions)]
 
-            # Display confidence below the predicted label
-            confidence_text = f"Confidence: {confidence:.2f}"
-            cv2.putText(frame_clone, confidence_text, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                # Get the probability/confidence score for the predicted class
+                confidence = np.max(predictions)  # Maximum confidence value
 
-            # Convert frame to Image for Streamlit
-            img = Image.fromarray(cv2.cvtColor(frame_clone, cv2.COLOR_BGR2RGB))
-            stframe.image(img, channels="RGB")
+                # Display the predicted label
+                text = f"Predicted: {predicted_label}"
+                cv2.putText(frame_clone, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-            # Check if the stop button is pressed
-            if stop_button:
-                break
+                # Display confidence below the predicted label
+                confidence_text = f"Confidence: {confidence:.2f}"
+                cv2.putText(frame_clone, confidence_text, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        # Release the camera and close all OpenCV windows
-        cap.release()
-        cv2.destroyAllWindows()
+                # Convert frame to Image for Streamlit
+                img = Image.fromarray(cv2.cvtColor(frame_clone, cv2.COLOR_BGR2RGB))
+                stframe.image(img, channels="RGB")
+
+                # Check if the stop button is pressed
+                if stop_button:
+                    break
+
+            # Release the camera and close all OpenCV windows
+            cap.release()
+            cv2.destroyAllWindows()
