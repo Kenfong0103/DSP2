@@ -89,29 +89,13 @@ class VideoTransformer(VideoTransformerBase):
 
         return frame_clone
 
-# Function to reset the WebRTC streamer
-def reset_webrtc():
-    st.session_state["webrtc_streamer"] = None
+webrtc_ctx = webrtc_streamer(
+    key="example",
+    mode=WebRtcMode.SENDRECV,
+    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+    video_processor_factory=VideoTransformer,
+    media_stream_constraints={"video": True, "audio": False},
+)
 
-if "webrtc_streamer" not in st.session_state:
-    st.session_state["webrtc_streamer"] = webrtc_streamer(
-        key="example",
-        mode=WebRtcMode.SENDRECV,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        video_processor_factory=VideoTransformer,
-        media_stream_constraints={"video": True, "audio": False},
-    )
-
-# Button to reset the WebRTC streamer
-if st.button("Restart Camera"):
-    reset_webrtc()
-    st.session_state["webrtc_streamer"] = webrtc_streamer(
-        key="example",
-        mode=WebRtcMode.SENDRECV,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        video_processor_factory=VideoTransformer,
-        media_stream_constraints={"video": True, "audio": False},
-    )
-
-if st.session_state["webrtc_streamer"].video_processor:
-    st.session_state["webrtc_streamer"].video_processor.square_size = 200
+if webrtc_ctx.video_processor:
+    webrtc_ctx.video_processor.square_size = 200
