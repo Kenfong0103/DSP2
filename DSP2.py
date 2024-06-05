@@ -25,7 +25,7 @@ class_labels = {
 
 # Streamlit UI
 st.title('Identification & Classification of Stainless Steel Defect Types')
-st.text('How to work:')
+st.text('User Guide:')
 
 st.markdown("""
     <div style="width:100%; overflow-x:auto;">
