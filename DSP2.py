@@ -89,13 +89,22 @@ class VideoTransformer(VideoTransformerBase):
 
         return frame_clone
 
-webrtc_ctx = webrtc_streamer(
-    key="example",
-    mode=WebRtcMode.SENDRECV,
-    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-    video_processor_factory=VideoTransformer,
-    media_stream_constraints={"video": True, "audio": False},
-)
+# Function to restart the webrtc_streamer
+def webrtc_streamer_restart():
+    webrtc_ctx = webrtc_streamer(
+        key="example",
+        mode=WebRtcMode.SENDRECV,
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        video_processor_factory=VideoTransformer,
+        media_stream_constraints={"video": True, "audio": False},
+    )
 
-if webrtc_ctx.video_processor:
-    webrtc_ctx.video_processor.square_size = 200
+    if webrtc_ctx.video_processor:
+        webrtc_ctx.video_processor.square_size = 200
+
+# Create buttons to start and stop the camera
+if st.button('Start Camera'):
+    webrtc_streamer_restart()
+
+if st.button('Stop Camera'):
+    st.stop()
