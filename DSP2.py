@@ -41,9 +41,6 @@ class VideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.square_size = 200
 
-    def reset(self):
-        self.square_size = 200
-
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
 
@@ -101,4 +98,4 @@ webrtc_ctx = webrtc_streamer(
 )
 
 if webrtc_ctx.video_processor:
-    webrtc_ctx.video_processor.reset()
+    webrtc_ctx.video_processor.square_size = 200
