@@ -28,7 +28,7 @@ st.title('Identification & Classification of Stainless Steel Defect Types')
 
 st.markdown("""
     <div style="width:100%; overflow-x:auto;">
-        <p style="text-align: left; font-size: 15px;">1) https://drive.google.com/drive/folders/12FwxUc8npY8galvBo3pZzQqI_3BPdf69?usp=sharing.</p>
+        <a href="https://drive.google.com/drive/folders/12FwxUc8npY8galvBo3pZzQqI_3BPdf69?usp=sharing."></a>
         <p style="text-align: left; font-size: 15px;">1) Prepare an image of stainless steel defect types and display it on phone.</p>
         <p style="text-align: left; font-size: 15px;">2) Make sure device's camera is turned on and allowed access. (Recommend Using PC)</p>
         <p style="text-align: left; font-size: 15px;">3) Align the image with the green frame shown in the camera below.</p>
