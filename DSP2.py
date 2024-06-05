@@ -41,6 +41,9 @@ class VideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.square_size = 200
 
+    def reset(self):
+        self.square_size = 200
+
     def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
 
@@ -98,9 +101,4 @@ webrtc_ctx = webrtc_streamer(
 )
 
 if webrtc_ctx.video_processor:
-    webrtc_ctx.video_processor.square_size = 200
-
-
-现在我的code有一个小问题
-当我按start， camera就开始正常运行，然后我点击stop，camera也正常关闭
-但是当我再次点击start，camera就没有启动，需要我refresh page 才可以重新正常运作
+    webrtc_ctx.video_processor.reset()
