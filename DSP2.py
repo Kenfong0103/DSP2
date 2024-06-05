@@ -32,10 +32,11 @@ st.markdown("""
         <p style="text-align: left; font-size: 15px;">1) Prepare an image of stainless steel defect types and display it on phone.</p>
         <p style="text-align: left; font-size: 15px;">2) Or use the link to download some provided images. <a href="https://drive.google.com/drive/folders/12FwxUc8npY8galvBo3pZzQqI_3BPdf69?usp=sharing" target="_blank">Download images</a></p>
         <p style="text-align: left; font-size: 15px;">3) Make sure device's camera is turned on and allowed access. (Recommend Using PC)</p>
-        <p style="text-align: left; font-size: 15px;">4) Display image on phone and align the image with the green box shown in the camera below.</p>
-        <p style="text-align: left; font-size: 15px;">5) "Predicted" is the result of the defect type identified and classified by the camera.</p>
-        <p style="text-align: left; font-size: 15px;">6) "Confidence" is the confidence given by the camera.</p>
-        <p style="text-align: left; font-size: 15px;">7) The closer the value to 1.00, the more confident the camera in its identification & classification.</p>
+        <p style="text-align: left; font-size: 15px;">4) Press the start button to open the camera.</p>
+        <p style="text-align: left; font-size: 15px;">5) Display image on phone and align the image with the green box shown in the camera below.</p>
+        <p style="text-align: left; font-size: 15px;">6) "Predicted" is the result of the defect type identified and classified by the camera.</p>
+        <p style="text-align: left; font-size: 15px;">7) "Confidence" is the confidence given by the camera.</p>
+        <p style="text-align: left; font-size: 15px;">8) The closer the value to 1.00, the more confident the camera in its identification & classification.</p>
     </div>
 """, unsafe_allow_html=True)
 
