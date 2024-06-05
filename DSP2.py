@@ -89,8 +89,12 @@ class VideoTransformer(VideoTransformerBase):
 
         return frame_clone
 
-# Function to restart the webrtc_streamer
-def webrtc_streamer_restart():
+# Initialize session state for the streamer
+if 'webrtc_started' not in st.session_state:
+    st.session_state['webrtc_started'] = False
+
+def start_webrtc():
+    st.session_state['webrtc_started'] = True
     webrtc_ctx = webrtc_streamer(
         key="example",
         mode=WebRtcMode.SENDRECV,
@@ -102,9 +106,17 @@ def webrtc_streamer_restart():
     if webrtc_ctx.video_processor:
         webrtc_ctx.video_processor.square_size = 200
 
+def stop_webrtc():
+    st.session_state['webrtc_started'] = False
+
 # Create buttons to start and stop the camera
 if st.button('Start Camera'):
-    webrtc_streamer_restart()
+    start_webrtc()
 
 if st.button('Stop Camera'):
-    st.stop()
+    stop_webrtc()
+    st.experimental_rerun()  # Rerun the app to reset the webrtc_streamer
+
+# Automatically start the webrtc streamer if the session state indicates it
+if st.session_state['webrtc_started']:
+    start_webrtc()
