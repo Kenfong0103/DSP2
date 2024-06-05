@@ -92,28 +92,13 @@ class VideoTransformer(VideoTransformerBase):
 
         return frame_clone
 
-if "webrtc_ctx" not in st.session_state:
-    st.session_state.webrtc_ctx = None
+webrtc_ctx = webrtc_streamer(
+    key="example",
+    mode=WebRtcMode.SENDRECV,
+    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+    video_processor_factory=VideoTransformer,
+    media_stream_constraints={"video": True, "audio": False},
+)
 
-if "is_running" not in st.session_state:
-    st.session_state.is_running = False
-
-def start_stream():
-    st.session_state.is_running = True
-    st.session_state.webrtc_ctx = webrtc_streamer(
-        key="example",
-        mode=WebRtcMode.SENDRECV,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        video_processor_factory=VideoTransformer,
-        media_stream_constraints={"video": True, "audio": False},
-    )
-    if st.session_state.webrtc_ctx.video_processor:
-        st.session_state.webrtc_ctx.video_processor.reset()
-
-def stop_stream():
-    if st.session_state.webrtc_ctx:
-        st.session_state.webrtc_ctx.state.stop()
-        st.session_state.is_running = False
-
-st.button("Start", on_click=start_stream)
-st.button("Stop", on_click=stop_stream)
+if webrtc_ctx.video_processor:
+    webrtc_ctx.video_processor.reset()
