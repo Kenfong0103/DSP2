@@ -89,34 +89,13 @@ class VideoTransformer(VideoTransformerBase):
 
         return frame_clone
 
-# Initialize session state for the streamer
-if 'webrtc_started' not in st.session_state:
-    st.session_state['webrtc_started'] = False
+webrtc_ctx = webrtc_streamer(
+    key="example",
+    mode=WebRtcMode.SENDRECV,
+    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+    video_processor_factory=VideoTransformer,
+    media_stream_constraints={"video": True, "audio": False},
+)
 
-def start_webrtc():
-    st.session_state['webrtc_started'] = True
-    webrtc_ctx = webrtc_streamer(
-        key="example",
-        mode=WebRtcMode.SENDRECV,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        video_processor_factory=VideoTransformer,
-        media_stream_constraints={"video": True, "audio": False},
-    )
-
-    if webrtc_ctx.video_processor:
-        webrtc_ctx.video_processor.square_size = 200
-
-def stop_webrtc():
-    st.session_state['webrtc_started'] = False
-
-# Create buttons to start and stop the camera
-if st.button('Start Camera'):
-    start_webrtc()
-
-if st.button('Stop Camera'):
-    stop_webrtc()
-    st.experimental_rerun()  # Rerun the app to reset the webrtc_streamer
-
-# Automatically start the webrtc streamer if the session state indicates it
-if st.session_state['webrtc_started']:
-    start_webrtc()
+if webrtc_ctx.video_processor:
+    webrtc_ctx.video_processor.square_size = 200
