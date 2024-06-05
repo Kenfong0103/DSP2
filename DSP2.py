@@ -89,32 +89,18 @@ class VideoTransformer(VideoTransformerBase):
 
         return frame_clone
 
-# Add state to handle the webrtc context
-if 'webrtc_ctx' not in st.session_state:
-    st.session_state['webrtc_ctx'] = None
+webrtc_ctx = webrtc_streamer(
+    key="example",
+    mode=WebRtcMode.SENDRECV,
+    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+    video_processor_factory=VideoTransformer,
+    media_stream_constraints={"video": True, "audio": False},
+)
 
-# Function to start the webrtc streamer
-def start_webrtc():
-    st.session_state['webrtc_ctx'] = webrtc_streamer(
-        key="example",
-        mode=WebRtcMode.SENDRECV,
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        video_processor_factory=VideoTransformer,
-        media_stream_constraints={"video": True, "audio": False},
-    )
+if webrtc_ctx.video_processor:
+    webrtc_ctx.video_processor.square_size = 200
 
-# Function to stop the webrtc streamer
-def stop_webrtc():
-    if st.session_state['webrtc_ctx'] and st.session_state['webrtc_ctx'].state.playing:
-        st.session_state['webrtc_ctx'].stop()
-        st.session_state['webrtc_ctx'] = None
 
-# Add buttons to start and stop the webrtc streamer
-if st.button('Start Camera'):
-    start_webrtc()
-
-if st.button('Stop Camera'):
-    stop_webrtc()
-
-if st.session_state['webrtc_ctx'] and st.session_state['webrtc_ctx'].video_processor:
-    st.session_state['webrtc_ctx'].video_processor.square_size = 200
+现在我的code有一个小问题
+当我按start， camera就开始正常运行，然后我点击stop，camera也正常关闭
+但是当我再次点击start，camera就没有启动，需要我refresh page 才可以重新正常运作
