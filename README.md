@@ -14,3 +14,11 @@ Results after training the model:
 ![Screenshot 2025-03-22 111737](https://github.com/user-attachments/assets/b5ac9bd1-7d93-41f5-996f-4fe2e071d0bd)
 ![Screenshot 2025-03-22 111506](https://github.com/user-attachments/assets/ec2cf482-976d-40d4-8196-ce3e1b15ee64)
 ![Screenshot 2025-03-22 111516](https://github.com/user-attachments/assets/f9364712-7055-4af1-a2a9-10d877cf81f5)
+
+
+Deploy to Streamlit:
+
+
+![Screenshot 2025-03-22 111855](https://github.com/user-attachments/assets/f1e1556e-9029-4679-9d00-3f9a336a3936)![Screenshot 2025-03-22 111907](https://github.com/user-attachments/assets/0e4c1ef3-4d80-4889-9931-143ca76c114c)
+
+
