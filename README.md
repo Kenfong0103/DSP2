@@ -16,7 +16,7 @@ Results after training the model:
 ![Screenshot 2025-03-22 111516](https://github.com/user-attachments/assets/f9364712-7055-4af1-a2a9-10d877cf81f5)
 
 
-Deploy to Streamlit:
+Deploy to Streamlit:[Camera-Based Detection for Evaluating Stainless Steel](https://dsp2camera.streamlit.app/) (**Sorry if loading slowly**)
 
 
 ![Screenshot 2025-03-22 111855](https://github.com/user-attachments/assets/f1e1556e-9029-4679-9d00-3f9a336a3936)
