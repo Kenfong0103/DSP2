@@ -6,3 +6,9 @@ Example type of stainless steel surface defect:
 ![Screenshot 2025-03-22 110757](https://github.com/user-attachments/assets/1220dbe2-283e-4773-9980-5248adc4a151)
 
 
+
+Results after training the model:
+
+
+![Screenshot 2025-03-22 111506](https://github.com/user-attachments/assets/ec2cf482-976d-40d4-8196-ce3e1b15ee64)
+![Screenshot 2025-03-22 111516](https://github.com/user-attachments/assets/f9364712-7055-4af1-a2a9-10d877cf81f5)
