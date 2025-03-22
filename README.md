@@ -19,6 +19,7 @@ Results after training the model:
 Deploy to Streamlit:
 
 
-![Screenshot 2025-03-22 111855](https://github.com/user-attachments/assets/f1e1556e-9029-4679-9d00-3f9a336a3936)![Screenshot 2025-03-22 111907](https://github.com/user-attachments/assets/0e4c1ef3-4d80-4889-9931-143ca76c114c)
+![Screenshot 2025-03-22 111855](https://github.com/user-attachments/assets/f1e1556e-9029-4679-9d00-3f9a336a3936)
+![Screenshot 2025-03-22 111907](https://github.com/user-attachments/assets/0e4c1ef3-4d80-4889-9931-143ca76c114c)
 
 
